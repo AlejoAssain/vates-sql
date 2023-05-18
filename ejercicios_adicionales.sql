@@ -219,17 +219,17 @@ INSERT INTO MY_EMPLOYEE_AA VALUES(
 
 -- EJERCICIO 29
 
+-- EJERCICIO 35
+SELECT 
+   JOB_ID,  
+   DECODE(JOB_ID, 
+             'AD_PRES', 'A', 
+             'ST_MAN', 'B', 
+             'IT_PROG', 'C', 
+             'SA_REP', 'D',
+             'ST_CLERK', 'F',
+             '0'
+   )
+FROM EMPLOYEES;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- EJERCICIO 36

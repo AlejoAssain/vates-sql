@@ -204,10 +204,38 @@ ALTER TABLE EMP_AA
       ADD COMMISSION number(4, 2) CHECK (COMMISSION > 0);
       
 -- EJERCICIO 27
+CREATE TABLE MY_EMPLOYE_AA (
+       ID number(4) CONSTRAINT MY_EMPLOYEE_AA_ID_NN NOT NULL,
+       LAST_NAME varchar2(25),
+       FIRST_NAME varchar2(25),
+       USERID varchar2(8),
+       SALARY number(9, 2)
+);
 
 -- EJERCICIO 28
+INSERT INTO MY_EMPLOYEE_AA VALUES(
+       1, 'Patel', 'Ralph'
+);
 
 -- EJERCICIO 29
+
+-- EJERCICIO 35
+SELECT 
+   JOB_ID,  
+   DECODE(JOB_ID, 
+             'AD_PRES', 'A', 
+             'ST_MAN', 'B', 
+             'IT_PROG', 'C', 
+             'SA_REP', 'D',
+             'ST_CLERK', 'F',
+             '0'
+   )
+FROM EMPLOYEES;
+
+-- EJERCICIO 36
+
+
+
 
 
 
