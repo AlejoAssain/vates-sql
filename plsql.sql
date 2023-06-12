@@ -192,11 +192,13 @@ DECLARE
   v_str varchar2(20);
 BEGIN
   case
-    when v_num = 1 then v_str := 'aa'
-    when v_num = 2 then v_str := 'bb'
-    when v_num = 3 then v_str := 'cc'
-    when v_num = 4 then v_str := 'dd'
+    when v_num = 1 then v_str := 'aa';
+    when v_num = 2 then v_str := 'bb';
+    when v_num = 3 then v_str := 'cc';
+    when v_num = 4 then v_str := 'dd';
   end case;
+  
+  dbms_output.put_line(v_str);
 END;
 
 -- E32
@@ -226,9 +228,86 @@ END;
 
 -- E33
 DECLARE
-
+   v_csam number;
+   v_cmot number;
+   v_fecha date;
 BEGIN
+   SELECT COUNT(*)
+   INTO v_csam
+   FROM CELULARES_AA
+   WHERE LOWER(MARCA) = 'samsung';
+   
+   SELECT COUNT(*)
+   INTO v_cmot
+   FROM CELULARES_AA
+   WHERE LOWER(MARCA) = 'motorola';
+   
+   if v_csam > v_cmot then
+     SELECT MIN(FECHA_COMPRA)
+     INTO v_fecha
+     FROM CELULARES_AA
+     WHERE LOWER(MARCA) = 'samsung';
+   else
+     SELECT MIN(FECHA_COMPRA)
+     INTO v_fecha
+     FROM CELULARES_AA
+     WHERE LOWER(MARCA) = 'motorola';
+   end if;
+   
+   dbms_output.put_line(v_fecha);
+END;
+
+-- E34
+DECLARE
+   v_cliente CLIENTES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cliente
+  FROM CLIENTES_AA C
+  WHERE C.SUELDO_NETO = (
+        SELECT MAX(C1.SUELDO_NETO)
+        FROM CLIENTES_AA C1
+  );
+  
+  CASE
+    when LOWER(v_cliente.provincia) = 'cordoba' then
+      dbms_output.put_line(v_cliente.nombre);
+    when LOWER(v_cliente.provincia) = 'tucuman' then
+      dbms_output.put_line(v_cliente.direccion);
+    when LOWER(v_cliente.provincia) = 'jujuy' then
+      dbms_output.put_line(v_cliente.apellido);
+    when LOWER(v_cliente.provincia) = 'chaco' then
+      dbms_output.put_line(v_cliente.fecha_nac);
+    else 
+      dbms_output.put_line(v_cliente.dni);
+  END CASE;
 
 END;
 
+-- E35
+DECLARE
+   v_cod number := &num1;
+   v_nom varchar2(40);
+BEGIN
+  SELECT C.NOMBRE
+  INTO v_nom
+  FROM CLIENTES_AA C
+  WHERE C.ID = v_cod;
+  
+  dbms_output.put_line(v_nom);
+END;
 
+-- E36
+DECLARE
+   v_cod number := &num1;
+   v_cli CLIENTES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cli
+  FROM CLIENTES_AA C
+  WHERE C.ID = v_cod;
+  
+  dbms_output.put_line(v_cli.nombre);
+  dbms_output.put_line(v_cli.apellido);
+  dbms_output.put_line(v_cli.dni);
+END;
