@@ -311,3 +311,35 @@ BEGIN
   dbms_output.put_line(v_cli.apellido);
   dbms_output.put_line(v_cli.dni);
 END;
+
+-- E37
+DECLARE
+   v_cod number := &num1;
+   v_cant_cel number;
+   v_cel CELULAR_AA%ROWTYPE;
+BEGIN
+  SELECT COUNT(*)
+  INTO v_cant_cel
+  FROM CELULARES_AA
+  WHERE ID_CLIENTE = v_cod;
+  
+  if v_cant_cel = 1 then
+    SELECT *
+    INTO v_cel
+    FROM CELULARES_AA
+    WHERE ID_CLIENTE = v_cod;
+    
+    dbms_output.put_line('Id: ' || TO_CHAR(v_cel.id));
+    dbms_output.put_line('Cod. area: ' || v_cel.cod_area);
+    dbms_output.put_line('Numero: ' || TO_CHAR(v_cel.numero));
+    dbms_output.put_line('Marca: ' || v_cel.marca);
+    dbms_output.put_line('Id cliente: ' || TO_CHAR(v_cel));
+    
+  elsif v_cant_cel > 1 then
+    dbms_output.put_line('El cliente no tiene numeros registrados');
+
+  else
+    dbms_output.put_line('El cliente tiene varios numeros registrados');
+    
+END;
+  
