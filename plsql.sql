@@ -173,9 +173,30 @@ DECLARE
   v_num2 number := &num2;
   v_sum number;
 BEGIN
-  v_sum = v_num1 + v_num2;
+  v_sum := v_num1 + v_num2;
 
-  if v_sum < 51
+  if v_sum < 51 then
+    dbms_output.put_line('Suma entre 2 y 50');
+  elsif v_sum < 101 then
+    dbms_output.put_line('Suma entre 51 y 100');
+  elsif v_sum < 201 then
+    dbms_output.put_line('Suma entre 101 y 200');
+  else
+    dbms_output.put_line('No se contrempla resultado');
+  end if;
+END;
+
+-- E31
+DECLARE
+  v_num number := &num1;
+  v_str varchar2(20);
+BEGIN
+  case
+    when v_num = 1 then v_str := 'aa'
+    when v_num = 2 then v_str := 'bb'
+    when v_num = 3 then v_str := 'cc'
+    when v_num = 4 then v_str := 'dd'
+  end case;
 END;
 
 -- E32
@@ -201,6 +222,13 @@ BEGIN
   dbms_output.put_line(v_cliente.dni);
   dbms_output.put_line(v_cliente.sueldo_neto);
   dbms_output.put_line(v_cliente.provincia);
+END;
+
+-- E33
+DECLARE
+
+BEGIN
+
 END;
 
 
