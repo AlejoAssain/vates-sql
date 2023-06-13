@@ -316,7 +316,7 @@ END;
 DECLARE
    v_cod number := &num1;
    v_cant_cel number;
-   v_cel CELULAR_AA%ROWTYPE;
+   v_cel CELULARES_AA%ROWTYPE;
 BEGIN
   SELECT COUNT(*)
   INTO v_cant_cel
@@ -337,9 +337,110 @@ BEGIN
     
   elsif v_cant_cel > 1 then
     dbms_output.put_line('El cliente no tiene numeros registrados');
-
   else
     dbms_output.put_line('El cliente tiene varios numeros registrados');
+  end if;
     
 END;
   
+-- E38
+
+-- E46
+DECLARE
+   v_idcli number := &idcli;
+   v_cli CLIENTES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cli
+  FROM CLIENTES_AA
+  WHERE ID = v_idcli;
+  
+  dbms_output.put_line('Nombre: ' || v_cli.nombre);
+  dbms_output.put_line('Apellido: ' || v_cli.apellido);
+END;
+
+-- E47
+DECLARE
+   v_idcel number := &idcel;
+   v_cel CELULARES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cel
+  FROM CELULARES_AA
+  WHERE ID = v_idcel;
+  
+  dbms_output.put_line('Carac: ' || v_cel.cod_area);
+  dbms_output.put_line('Numero: ' || v_cel.numero);
+END;
+
+-- E48
+DECLARE
+   v_cod number := &cod;
+   v_num number := &nume;
+   v_cli CLIENTES_AA%ROWTYPE;
+BEGIN
+  SELECT CLI.*
+  INTO v_cli
+  FROM CELULARES_AA CEL
+    JOIN CLIENTES_AA CLI ON CEL.ID_CLIENTE = CLI.ID
+  WHERE CEL.cod_area = v_cod 
+    AND CEL.numero = v_num;
+  
+  dbms_output.put_line('Nombre: ' || v_cli.nombre);
+  dbms_output.put_line('Apellido: ' || v_cli.apellido);
+END;
+
+-- E49
+DECLARE
+   CURSOR c_cli IS
+     SELECT *
+     FROM CLIENTES_AA
+     WHERE SUELDO_NETO > 40000;
+BEGIN
+  FOR v_cli IN c_cli LOOP
+    dbms_output.put_line('Nombre: ' || v_cli.nombre);
+    dbms_output.put_line('Apellido: ' || v_cli.apellido);
+  END LOOP;
+END;
+
+-- E50
+DECLARE 
+   CURSOR c_prov IS
+     SELECT DISTINCT provincia
+     FROM CLIENTES_AA;
+   CURSOR c_cli(p_prov IN VARCHAR2) IS
+     SELECT *
+     FROM CLIENTES_AA
+     WHERE PROVINCIA = p_prov;
+BEGIN 
+  FOR prov IN c_prov LOOP
+    dbms_output.put_line(prov.provincia);
+    FOR cli IN c_cli(prov.provincia) LOOP
+      dbms_output.put_line('  Nombre: ' || cli.nombre);
+      dbms_output.put_line('  Apellido: ' || cli.apellido);
+    END LOOP;
+  END LOOP;
+END;
+
+-- E51
+DECLARE
+   CURSOR c_cli_cel IS
+     SELECT CLI.ID, COUNT(CEL.ID)
+     FROM CLIENTES_AA CLI JOIN CELULARES_AA CEL
+       ON CLI.ID = CEL.ID_CLIENTE
+     GROUP BY CLI.ID
+     HAVING COUNT(CEL.ID) > 1;
+   
+   v_cli CLIENTES_AA%ROWTYPE; 
+BEGIN
+  FOR cli_id IN c_cli_cel LOOP
+    SELECT *
+    INTO v_cli
+    FROM CLIENTES_AA C
+    WHERE C.ID = cli_id.id;
+    
+    dbms_output.put_line('  Nombre: ' || v_cli.nombre);
+    dbms_output.put_line('  Apellido: ' || v_cli.apellido);
+    
+  END LOOP;
+END;
