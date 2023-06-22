@@ -444,3 +444,116 @@ BEGIN
     
   END LOOP;
 END;
+
+-- E52
+DECLARE
+BEGIN
+
+-- E56
+DECLARE
+   v_cli CLIENTES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cli 
+  FROM CLIENTES_AA
+  WHERE UPPER(PROVINCIA) = 'FORMOSA';
+  
+  dbms_output.put_line(v_cli.nombre || v_cli.apellido);
+  
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    dbms_output.put_line('No se encontraron datos');
+END;
+
+-- E57
+DECLARE
+   v_cel CELULARES_AA%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO v_cel
+  FROM CELULARES_AA
+  WHERE COD_AREA = 351;
+  
+  dbms_output.put_line(v_cel.numero);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    dbms_output.put_line('No se encontraron datos');
+  WHEN TOO_MANY_ROWS THEN
+    dbms_output.put_line('La consulate devuelve demasiadas columnas');
+END;
+
+-- E58
+DECLARE
+   v_div number;
+BEGIN
+  v_div := 1/0;
+  dbms_output.put_line('El resultado es: ' || TO_CHAR(v_div));
+EXCEPTION
+  WHEN ZERO_DIVIDE THEN
+    dbms_output.put_line('No se puede dividir por cero');
+END;
+
+-- E59
+DECLARE
+   CURSOR c_cli IS
+     SELECT *
+     FROM CLIENTES_AA;
+   SALDO_INSUFICIENTE EXCEPTION;
+BEGIN
+  FOR cli IN c_cli LOOP
+    if cli.sueldo_neto > 25000 then
+      dbms_output.put_line('Tiene suficiente dinero para celu nuevo');
+    else
+      dbms_output.put_line('El cliente ' || cli.nombre || ' ' || cli.apellido || ' no tiene salario suficiente');
+      RAISE SALDO_INSUFICIENTE;
+    end if;
+  END LOOP;
+EXCEPTION
+  WHEN SALDO_INSUFICIENTE THEN
+    dbms_output.put_line('EL SALDO ES INSUFICIENTE');
+END;
+
+-- E60
+DECLARE
+   CURSOR c_cli IS
+     SELECT cli.id, cli.nombre, cli.apellido, count(cel.id) AS cantidad_cel
+     FROM CLIENTES_AA cli 
+       JOIN CELULARES_AA cel ON cli.id = cel.id_cliente
+     GROUP BY cli.id, cli.nombre, cli.apellido;
+   VARIOS_CELULARES EXCEPTION;
+BEGIN
+  for cli in c_cli loop
+    if cli.cantidad_cel > 1 then
+      dbms_output.put_line('El cliente ' || cli.nombre || ' ' || cli.apellido || ' tiene varios celulares');
+      RAISE VARIOS_CELULARES;
+    end if;
+  end loop;
+EXCEPTION
+  WHEN VARIOS_CELULARES THEN
+    dbms_output.put_line('Contacte al cliente');
+END;
+
+-- E61
+DECLARE
+   CURSOR c_cli is
+     SELECT * FROM CLIENTES_AA;
+   
+   OFRECER_CEL EXCEPTION;
+   DEJAR_DE_OFRECER_CEL EXCEPTION;
+   CANDIDATO_ENCONTRADO EXCEPTION;
+BEGIN
+  for cli in c_cli loop
+    CASE
+      WHEN cli.sueldo_neto > 80000 then RAISE OFRECER_CEL;
+      WHEN cli.sueldo_neto > 25000 then RAISE CANDIDATO_ENCONTRADO;
+      ELSE RAISE DEJAR_DE_OFRECER_CEL;
+    END CASE;
+  end loop;    
+EXCEPTION
+  WHEN OFRECER_CEL THEN
+    dbms_output.put_line('Ofrecer celular a cliente');
+  WHEN DEJAR_DE_OFRECER_CEL THEN
+    dbms_output.put_line('No ofrecer mas celulares a cliente');
+  WHEN CANDIDATO_ENCONTRADO THEN
+    dbms_output.put_line('Posible candidato');  
+END;
