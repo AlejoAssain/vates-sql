@@ -557,3 +557,29 @@ EXCEPTION
   WHEN CANDIDATO_ENCONTRADO THEN
     dbms_output.put_line('Posible candidato');  
 END;
+
+-- E62
+CREATE OR REPLACE FUNCTION valor_max_aa(v_num1, v_num2) return number IS
+       v_res number; 
+BEGIN 
+  if v_num1 > v_num2 then
+    v_res := v_num1;
+  else
+    V_res := v_num2;
+  end if;
+  return v_res;
+END;
+
+DECLARE
+    v_num1 number := &num1;
+    v_num2 number := &num2;
+    v_res number;
+BEGIN
+  if v_num1 = v_num2 then
+    dbms_output.put_line('Los numeros ingresados son iguales');
+  else
+    v_res := valor_max_aa(v_num1, v_num2);
+    dbms_output.put_line('El numero mayor es: ' || to_char(v_res));
+  end if;
+END;
+
