@@ -559,15 +559,15 @@ EXCEPTION
 END;
 
 -- E62
-CREATE OR REPLACE FUNCTION valor_max_aa(v_num1, v_num2) return number IS
-       v_res number; 
+CREATE OR REPLACE FUNCTION valor_max_aa(v_num1 number, v_num2 number) 
+       return number IS
 BEGIN 
   if v_num1 > v_num2 then
-    v_res := v_num1;
+    return v_num1;
   else
-    V_res := v_num2;
+    return v_num2;
   end if;
-  return v_res;
+
 END;
 
 DECLARE
@@ -583,3 +583,73 @@ BEGIN
   end if;
 END;
 
+-- E63
+CREATE OR REPLACE PROCEDURE fecha_actual_aa IS
+BEGIN
+  dbms_output.put_line(SYSDATE);
+END;
+
+BEGIN
+  fecha_actual_aa;
+END;
+
+-- E64
+CREATE OR REPLACE FUNCTION cant_cel_aa(v_cod number) return number IS
+       v_res number;
+BEGIN
+  SELECT COUNT(*) INTO v_res
+  FROM CELULARES_AA
+  WHERE cod_area = v_cod;
+  
+  return v_res;
+END;
+  
+DECLARE
+  v_cod number := &cod;
+BEGIN
+  dbms_output.put_line('Cant de celulares: ' || to_char(cant_cel_aa(v_cod)));
+END;
+
+-- E65
+CREATE OR REPLACE 
+  FUNCTION obtener_estado_alumno(v_nota number) return varchar2 IS
+BEGIN
+  if v_nota < 4 then 
+    return 'El alumno desprobo';
+  elsif v_nota < 8 then 
+    return 'El alumno regularizo';
+  else 
+    return 'El alumno promociono';
+  end if;
+END;
+
+DECLARE
+  v_nota number := &nota;
+  v_res varchar2(100);
+BEGIN
+  v_res := obtener_estado_alumno(v_nota);
+  dbms_output.put_line('Estado: ' || v_res);
+END;
+
+-- E66
+CREATE OR REPLACE 
+  FUNCTION sum_sueldo_prov_aa(v_prov varchar2) return number IS
+    v_res number;
+BEGIN
+  SELECT SUM(sueldo_neto) INTO v_res
+  FROM CLIENTES_AA
+  WHERE UPPER(PROVINCIA) = UPPER(v_prov);
+  
+  if v_res:
+    return v_res;
+  else
+    return -1;
+END;
+
+DECLARE
+  v_prov varchar2(50) := &prov;
+  v_sueldo number;
+BEGIN
+  v_sueldo := sum_sueldo_prov_aa(v_prov);
+  dbms_output.put_line('Sueldo de ' || v_prov || ': '|| to_char(v_sueldo));
+END;
