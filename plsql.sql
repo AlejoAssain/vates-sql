@@ -653,3 +653,55 @@ BEGIN
   v_sueldo := sum_sueldo_prov_aa(v_prov);
   dbms_output.put_line('Sueldo de ' || v_prov || ': '|| to_char(v_sueldo));
 END;
+
+-- E67
+
+
+-- E79
+CREATE SEQUENCE SEC_CLIENTES_AA
+START WITH 21
+INCREMENT BY 1
+MAXVALUE 999999;
+
+-- E80
+INSERT INTO CLIENTES_AA VALUES (
+  SEC_CLIENTES_AA.NEXTVAL,
+  'Agustin',
+  'Gonzalez',
+  43245562,
+  20000,
+  'San Martin 3100',
+  '20-10-2000',
+  'Buenos Aires'
+);
+
+SELECT * FROM CLIENTES_AA ORDER BY ID DESC;
+
+-- E81
+SELECT * FROM ALL_SEQUENCES ORDER BY SEQUENCE_NAME;
+
+-- E82
+DECLARE
+    v_nombre varchar(30) := &nombre;
+    v_apellido varchar(30) := &apellido;
+    v_dni number := &dni;
+    v_sueldo number := &sueldo;
+    v_direccion varchar(40) := &direccion;
+    v_fecha_nac varchar(20) := &fecha_nac;
+    v_provincia varchar(30) := &provincia;
+BEGIN
+  INSERT INTO CLIENTES_AA VALUES (
+    SEC_CLIENTES_AA.NEXTVAL,
+    v_nombre,
+    v_apellido,
+    v_dni,
+    v_sueldo,
+    v_direccion,
+    v_fecha_nac,
+    v_provincia   
+  );
+END;
+
+-- E83
+
+
