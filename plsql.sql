@@ -333,7 +333,7 @@ BEGIN
     dbms_output.put_line('Cod. area: ' || v_cel.cod_area);
     dbms_output.put_line('Numero: ' || TO_CHAR(v_cel.numero));
     dbms_output.put_line('Marca: ' || v_cel.marca);
-    dbms_output.put_line('Id cliente: ' || TO_CHAR(v_cel));
+    dbms_output.put_line('Id cliente: ' || v_cel.id_cliente);
     
   elsif v_cant_cel > 1 then
     dbms_output.put_line('El cliente no tiene numeros registrados');
@@ -344,6 +344,151 @@ BEGIN
 END;
   
 -- E38
+DECLARE
+  v_cont number := 1;
+BEGIN
+  while v_cont < 51 loop
+    dbms_output.put_line(v_cont);
+    v_cont := v_cont + 1;
+  end loop;
+END;
+
+-- E39
+BEGIN
+  for i in 1..50 loop
+    dbms_output.put_line(i);
+  end loop;
+END;
+
+-- E40
+DECLARE
+  v_cont number := 1;
+BEGIN
+  loop
+    dbms_output.put_line(v_cont);
+    v_cont := v_cont + 1;
+    exit when v_cont > 50;
+  end loop;
+END;
+
+-- E41
+DECLARE
+  v_cont number := 0;
+BEGIN
+  for i in 1..100 loop
+    if mod(i, 3) = 0 then
+      v_cont := v_cont + 1;
+      dbms_output.put_line(i);
+    end if;
+  end loop;
+  dbms_output.put_line('Hay ' || v_cont || ' multiplos de 3 entre 1 y 100');
+END;
+
+-- E42
+DECLARE
+  cursor c_cli is
+    SELECT * 
+    FROM CLIENTES_AA
+    WHERE ROWNUM <= 10;
+BEGIN
+  for cli in c_cli loop
+    if mod(cli.id, 2) = 0 then
+      dbms_output.put_line('Id: ' || cli.id);
+      dbms_output.put_line('Nombre: ' || cli.nombre);
+      dbms_output.put_line('Apellido: ' || cli.apellido);
+      dbms_output.put_line('');
+    end if;
+  end loop;
+END;
+
+-- E43
+DECLARE
+  v_sueldo_prom number;
+  v_cli clientes_aa%rowtype;
+BEGIN
+  SELECT AVG(sueldo_neto)
+  INTO v_sueldo_prom
+  FROM CLIENTES_AA;
+  
+  SELECT *
+  INTO v_cli
+  FROM CLIENTES_AA
+  WHERE ID = 8;
+  
+  if v_sueldo_prom < v_cli.sueldo_neto then
+    for i in 9..11 loop
+      SELECT *
+      INTO v_cli
+      FROM CLIENTES_AA
+      WHERE ID = i;
+      
+      dbms_output.put_line('Id: ' || v_cli.id);
+      dbms_output.put_line('Nombre: ' || v_cli.nombre);
+      dbms_output.put_line('Apellido: ' || v_cli.apellido);
+      dbms_output.put_line('');
+    end loop;
+  else
+    for i in 7..5 loop
+      SELECT *
+      INTO v_cli
+      FROM CLIENTES_AA
+      WHERE ID = i;
+      
+      dbms_output.put_line('Id: ' || v_cli.id);
+      dbms_output.put_line('Nombre: ' || v_cli.nombre);
+      dbms_output.put_line('Apellido: ' || v_cli.apellido);
+      dbms_output.put_line('');
+    end loop;
+  end if;
+  dbms_output.put_line('Sueldo prom: ' || round(v_sueldo_prom, 2));
+END;
+  
+-- E44
+DECLARE
+  v_word varchar(30) := &word;
+  v_letter varchar(1);
+  v_cont_v number := 0; 
+  v_cont_c number := 0;
+BEGIN
+  for i in 1..length(v_word) loop
+    v_letter := substr(v_word, i, 1);
+    if lower(v_letter) in ('a', 'e', 'i', 'o', 'u') then
+      v_cont_v := v_cont_v + 1;
+    else
+      v_cont_c := v_cont_c + 1;
+    end if;
+  end loop;
+  
+  dbms_output.put_line('Cant de vocales: ' || v_cont_v);
+  dbms_output.put_line('Cant de consonantes: ' || v_cont_c);
+END;  
+
+-- E45
+DECLARE
+  v_num number := 20;
+BEGIN
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+  v_num := v_num + 1;
+  dbms_output.put_line(v_num);
+END;
 
 -- E46
 DECLARE
@@ -441,13 +586,48 @@ BEGIN
     
     dbms_output.put_line('  Nombre: ' || v_cli.nombre);
     dbms_output.put_line('  Apellido: ' || v_cli.apellido);
+    dbms_output.put_line('');
     
   END LOOP;
 END;
 
 -- E52
 DECLARE
+  cursor c_cli is
+    SELECT *
+    FROM CLIENTES_AA;
+  v_cant_cel number;
+  v_cli_encontrado boolean := false;
+  v_utl_id number;
 BEGIN
+  for cli in c_cli loop
+    if not v_cli_encontrado then
+      SELECT COUNT(*)
+      INTO v_cant_cel
+      FROM CELULARES_AA
+      WHERE ID_CLIENTE = cli.id;
+    
+      if v_cant_cel = 0 then
+        SELECT MAX(ID)
+        INTO v_utl_id
+        FROM CELULARES_AA;  
+      
+        INSERT INTO CELULARES_AA 
+          (id,cod_area,NUMERO,MARCA,FECHA_COMPRA,ID_CLIENTE) 
+        VALUES (v_utl_id + 1, 351, 4657642, 'Motorola', '01-04-2020', cli.id);
+        
+        dbms_output.put_line('Celular agregado para cliente ' || cli.id);
+        
+        v_cli_encontrado := true;
+      end if;
+        
+    end if;
+  end loop;
+END;
+
+-- E53
+
+
 
 -- E56
 DECLARE
