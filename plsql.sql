@@ -691,16 +691,16 @@ BEGIN
         dbms_output.put_line('Nombre: ' || cli.nombre);
         dbms_output.put_line('Apellido: ' || cli.apellido);
       else
-        dbms_output.put_line('');        
+        dbms_output.put_line('');
         dbms_output.put_line(cli.nombre|| ' '|| cli.apellido || 'de Buenos Aires pero antes del 01/01/2000');
       end if;
     else
-      dbms_output.put_line('');    
+      dbms_output.put_line('');
       dbms_output.put_line(cli.nombre|| ' '|| cli.apellido || ' no es de Buenos Aires');
     end if;
   end loop;
 END;
-        
+
 -- E56
 DECLARE
    v_cli CLIENTES_AA%ROWTYPE;
@@ -915,7 +915,7 @@ BEGIN
   INTO v_cant_cel
   FROM CELULARES_AA
   WHERE ID_CLIENTE = cli_id;
-  
+
   if v_cant_cel > 0 then
     return v_cant_cel;
   else
@@ -928,16 +928,71 @@ DECLARE
 BEGIN
   dbms_output.put_line('La cantidad de celulares del cliente ' || v_cli_id || ' es ' || cant_cel(v_cli_id));
 END;
-    
--- E68
-CREATE OR REPLACE
-  function max_cel_cli() return varchar2(40) is
-    apellido varchar2(40);
-    max_cel number;
-BEGIN
-  
-    
 
+-- E68
+CREATE OR REPLACE FUNCTION cant_celxcli_aa return number IS
+  CURSOR c_max_cel_ape IS
+  SELECT COUNT(*) cant
+       , c.id
+       , apellido
+    FROM CLIENTES_AA c
+       , CELULARES_AA cel
+   WHERE c.id = id_cliente
+   GROUP BY c.id
+          , apellido
+   ORDER BY COUNT(*) DESC;
+
+  v_apellido_mostrar CLIENTES_AA.apellido%type;
+  v_id_cliente_mostrar CLIENTES_AA.id%type;
+
+  v_min_fec_compra_mostrar CELULARES_AA.fecha_compra%type;
+  v_cant_mostrar number:=0;
+
+  v_cant_cel number;
+  v_id_cliente CLIENTES_AA.id%type;
+  v_apellido CLIENTES_AA.apellido%type;
+
+  v_min_fec_compra CELULARES_AA.fecha_compra%type;
+
+BEGIN
+
+  OPEN c_max_cel_ape;
+  FETCH c_max_cel_ape
+   INTO v_cant_cel
+      , v_id_cliente
+      , v_apellido;
+
+  SELECT MIN(fecha_compra)
+    INTO v_min_fec_compra
+    FROM CELULARES_AA
+   WHERE id_cliente = v_id_cliente;
+
+  v_min_fec_compra_mostrar:=v_min_fec_compra;
+  v_cant_mostrar:=v_cant_cel;
+  v_id_cliente_mostrar := v_id_cliente;
+
+  LOOP
+    IF v_min_fec_compra_mostrar > v_min_fec_compra THEN
+      v_min_fec_compra_mostrar := v_min_fec_compra;
+      v_apellido_mostrar := v_apellido;
+      v_id_cliente_mostrar := v_id_cliente;
+    END IF;
+
+    FETCH c_max_cel_ape
+     INTO v_cant_cel
+        , v_id_cliente
+        , v_apellido;
+
+    EXIT WHEN v_cant_mostrar <> v_cant_cel;
+    SELECT MIN(fecha_compra)
+      INTO v_min_fec_compra
+      FROM CELULARES_AA
+     WHERE id_cliente = v_id_cliente;
+  END LOOP;
+  RETURN v_id_cliente_mostrar;
+END;
+
+-- E69
 
 -- E79
 CREATE SEQUENCE SEC_CLIENTES_AA
