@@ -647,7 +647,7 @@ DECLARE
     SELECT *
     FROM CLIENTES_AA;
 
-  cursor c_cel(cli_id) is
+  cursor c_cel(cli_id number) is
     SELECT *
     FROM CELULARES_AA
     WHERE ID_CLIENTE = cli_id;
@@ -685,9 +685,22 @@ DECLARE
 
 BEGIN
   for cli in c_cli loop
-    if
-
-
+    if lower(cli.provincia) = 'buenos aires' then
+      if cli.fecha_nac > to_date('01/01/2000', 'DD/MM/YYYY') then
+        dbms_output.put_line('');
+        dbms_output.put_line('Nombre: ' || cli.nombre);
+        dbms_output.put_line('Apellido: ' || cli.apellido);
+      else
+        dbms_output.put_line('');        
+        dbms_output.put_line(cli.nombre|| ' '|| cli.apellido || 'de Buenos Aires pero antes del 01/01/2000');
+      end if;
+    else
+      dbms_output.put_line('');    
+      dbms_output.put_line(cli.nombre|| ' '|| cli.apellido || ' no es de Buenos Aires');
+    end if;
+  end loop;
+END;
+        
 -- E56
 DECLARE
    v_cli CLIENTES_AA%ROWTYPE;
