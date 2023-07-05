@@ -955,7 +955,6 @@ CREATE OR REPLACE FUNCTION cant_celxcli_aa return number IS
   v_min_fec_compra CELULARES_AA.fecha_compra%type;
 
 BEGIN
-
   OPEN c_max_cel_ape;
   FETCH c_max_cel_ape
    INTO v_cant_cel
@@ -967,8 +966,8 @@ BEGIN
     FROM CELULARES_AA
    WHERE id_cliente = v_id_cliente;
 
-  v_min_fec_compra_mostrar:=v_min_fec_compra;
-  v_cant_mostrar:=v_cant_cel;
+  v_min_fec_compra_mostrar := v_min_fec_compra;
+  v_cant_mostrar := v_cant_cel;
   v_id_cliente_mostrar := v_id_cliente;
 
   LOOP
@@ -993,6 +992,49 @@ BEGIN
 END;
 
 -- E69
+CREATE OR REPLACE
+  procedure listado_clientes_aa is
+    cursor c_cli is
+      SELECT *
+      FROM CLIENTES_AA CLI
+      WHERE CLI.ID NOT IN (
+        SELECT CLI1.ID
+        FROM CELULARES_AA CEL1
+          JOIN CLIENTES_AA CLI1 ON CLI1.ID = CEL1.ID_CLIENTE
+      );
+BEGIN
+  for cli in c_cli loop
+    dbms_output.put_line('Nombre: ' || cli.nombre);
+    dbms_output.put_line('Apellido: ' || cli.apellido);
+    dbms_output.put_line('');
+  end loop;
+END;
+
+BEGIN
+  listado_clientes_aa();
+END;
+
+-- E70
+CREATE OR REPLACE
+  procedure mostrar_cliente_aa(cli_id number) is
+    v_cli clientes_aa%rowtype;
+BEGIN
+  SELECT *
+  INTO v_cli
+  FROM CLIENTES_AA
+  WHERE ID = cli_id;
+  
+  dbms_output.put_line('Nombre: ' || v_cli.nombre);
+  dbms_output.put_line('Apellido: ' || v_cli.apellido);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN dbms_output.put_line('No se encontro el cliente ' || cli_id);
+END;
+
+BEGIN
+  mostrar_cliente_aa(2000);  
+END;
+  
+-- E71
 
 -- E79
 CREATE SEQUENCE SEC_CLIENTES_AA
