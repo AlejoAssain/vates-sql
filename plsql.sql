@@ -197,7 +197,7 @@ BEGIN
     when v_num = 3 then v_str := 'cc';
     when v_num = 4 then v_str := 'dd';
   end case;
-  
+
   dbms_output.put_line(v_str);
 END;
 
@@ -236,12 +236,12 @@ BEGIN
    INTO v_csam
    FROM CELULARES_AA
    WHERE LOWER(MARCA) = 'samsung';
-   
+
    SELECT COUNT(*)
    INTO v_cmot
    FROM CELULARES_AA
    WHERE LOWER(MARCA) = 'motorola';
-   
+
    if v_csam > v_cmot then
      SELECT MIN(FECHA_COMPRA)
      INTO v_fecha
@@ -253,7 +253,7 @@ BEGIN
      FROM CELULARES_AA
      WHERE LOWER(MARCA) = 'motorola';
    end if;
-   
+
    dbms_output.put_line(v_fecha);
 END;
 
@@ -268,7 +268,7 @@ BEGIN
         SELECT MAX(C1.SUELDO_NETO)
         FROM CLIENTES_AA C1
   );
-  
+
   CASE
     when LOWER(v_cliente.provincia) = 'cordoba' then
       dbms_output.put_line(v_cliente.nombre);
@@ -278,7 +278,7 @@ BEGIN
       dbms_output.put_line(v_cliente.apellido);
     when LOWER(v_cliente.provincia) = 'chaco' then
       dbms_output.put_line(v_cliente.fecha_nac);
-    else 
+    else
       dbms_output.put_line(v_cliente.dni);
   END CASE;
 
@@ -293,7 +293,7 @@ BEGIN
   INTO v_nom
   FROM CLIENTES_AA C
   WHERE C.ID = v_cod;
-  
+
   dbms_output.put_line(v_nom);
 END;
 
@@ -306,7 +306,7 @@ BEGIN
   INTO v_cli
   FROM CLIENTES_AA C
   WHERE C.ID = v_cod;
-  
+
   dbms_output.put_line(v_cli.nombre);
   dbms_output.put_line(v_cli.apellido);
   dbms_output.put_line(v_cli.dni);
@@ -322,27 +322,27 @@ BEGIN
   INTO v_cant_cel
   FROM CELULARES_AA
   WHERE ID_CLIENTE = v_cod;
-  
+
   if v_cant_cel = 1 then
     SELECT *
     INTO v_cel
     FROM CELULARES_AA
     WHERE ID_CLIENTE = v_cod;
-    
+
     dbms_output.put_line('Id: ' || TO_CHAR(v_cel.id));
     dbms_output.put_line('Cod. area: ' || v_cel.cod_area);
     dbms_output.put_line('Numero: ' || TO_CHAR(v_cel.numero));
     dbms_output.put_line('Marca: ' || v_cel.marca);
     dbms_output.put_line('Id cliente: ' || v_cel.id_cliente);
-    
+
   elsif v_cant_cel > 1 then
     dbms_output.put_line('El cliente no tiene numeros registrados');
   else
     dbms_output.put_line('El cliente tiene varios numeros registrados');
   end if;
-    
+
 END;
-  
+
 -- E38
 DECLARE
   v_cont number := 1;
@@ -387,7 +387,7 @@ END;
 -- E42
 DECLARE
   cursor c_cli is
-    SELECT * 
+    SELECT *
     FROM CLIENTES_AA
     WHERE ROWNUM <= 10;
 BEGIN
@@ -409,19 +409,19 @@ BEGIN
   SELECT AVG(sueldo_neto)
   INTO v_sueldo_prom
   FROM CLIENTES_AA;
-  
+
   SELECT *
   INTO v_cli
   FROM CLIENTES_AA
   WHERE ID = 8;
-  
+
   if v_sueldo_prom < v_cli.sueldo_neto then
     for i in 9..11 loop
       SELECT *
       INTO v_cli
       FROM CLIENTES_AA
       WHERE ID = i;
-      
+
       dbms_output.put_line('Id: ' || v_cli.id);
       dbms_output.put_line('Nombre: ' || v_cli.nombre);
       dbms_output.put_line('Apellido: ' || v_cli.apellido);
@@ -433,7 +433,7 @@ BEGIN
       INTO v_cli
       FROM CLIENTES_AA
       WHERE ID = i;
-      
+
       dbms_output.put_line('Id: ' || v_cli.id);
       dbms_output.put_line('Nombre: ' || v_cli.nombre);
       dbms_output.put_line('Apellido: ' || v_cli.apellido);
@@ -442,12 +442,12 @@ BEGIN
   end if;
   dbms_output.put_line('Sueldo prom: ' || round(v_sueldo_prom, 2));
 END;
-  
+
 -- E44
 DECLARE
   v_word varchar(30) := &word;
   v_letter varchar(1);
-  v_cont_v number := 0; 
+  v_cont_v number := 0;
   v_cont_c number := 0;
 BEGIN
   for i in 1..length(v_word) loop
@@ -458,10 +458,10 @@ BEGIN
       v_cont_c := v_cont_c + 1;
     end if;
   end loop;
-  
+
   dbms_output.put_line('Cant de vocales: ' || v_cont_v);
   dbms_output.put_line('Cant de consonantes: ' || v_cont_c);
-END;  
+END;
 
 -- E45
 DECLARE
@@ -499,7 +499,7 @@ BEGIN
   INTO v_cli
   FROM CLIENTES_AA
   WHERE ID = v_idcli;
-  
+
   dbms_output.put_line('Nombre: ' || v_cli.nombre);
   dbms_output.put_line('Apellido: ' || v_cli.apellido);
 END;
@@ -513,7 +513,7 @@ BEGIN
   INTO v_cel
   FROM CELULARES_AA
   WHERE ID = v_idcel;
-  
+
   dbms_output.put_line('Carac: ' || v_cel.cod_area);
   dbms_output.put_line('Numero: ' || v_cel.numero);
 END;
@@ -528,9 +528,9 @@ BEGIN
   INTO v_cli
   FROM CELULARES_AA CEL
     JOIN CLIENTES_AA CLI ON CEL.ID_CLIENTE = CLI.ID
-  WHERE CEL.cod_area = v_cod 
+  WHERE CEL.cod_area = v_cod
     AND CEL.numero = v_num;
-  
+
   dbms_output.put_line('Nombre: ' || v_cli.nombre);
   dbms_output.put_line('Apellido: ' || v_cli.apellido);
 END;
@@ -549,7 +549,7 @@ BEGIN
 END;
 
 -- E50
-DECLARE 
+DECLARE
    CURSOR c_prov IS
      SELECT DISTINCT provincia
      FROM CLIENTES_AA;
@@ -557,7 +557,7 @@ DECLARE
      SELECT *
      FROM CLIENTES_AA
      WHERE PROVINCIA = p_prov;
-BEGIN 
+BEGIN
   FOR prov IN c_prov LOOP
     dbms_output.put_line(prov.provincia);
     FOR cli IN c_cli(prov.provincia) LOOP
@@ -575,19 +575,19 @@ DECLARE
        ON CLI.ID = CEL.ID_CLIENTE
      GROUP BY CLI.ID
      HAVING COUNT(CEL.ID) > 1;
-   
-   v_cli CLIENTES_AA%ROWTYPE; 
+
+   v_cli CLIENTES_AA%ROWTYPE;
 BEGIN
   FOR cli_id IN c_cli_cel LOOP
     SELECT *
     INTO v_cli
     FROM CLIENTES_AA C
     WHERE C.ID = cli_id.id;
-    
+
     dbms_output.put_line('  Nombre: ' || v_cli.nombre);
     dbms_output.put_line('  Apellido: ' || v_cli.apellido);
     dbms_output.put_line('');
-    
+
   END LOOP;
 END;
 
@@ -606,27 +606,86 @@ BEGIN
       INTO v_cant_cel
       FROM CELULARES_AA
       WHERE ID_CLIENTE = cli.id;
-    
+
       if v_cant_cel = 0 then
         SELECT MAX(ID)
         INTO v_utl_id
-        FROM CELULARES_AA;  
-      
-        INSERT INTO CELULARES_AA 
-          (id,cod_area,NUMERO,MARCA,FECHA_COMPRA,ID_CLIENTE) 
+        FROM CELULARES_AA;
+
+        INSERT INTO CELULARES_AA
+          (id,cod_area,NUMERO,MARCA,FECHA_COMPRA,ID_CLIENTE)
         VALUES (v_utl_id + 1, 351, 4657642, 'Motorola', '01-04-2020', cli.id);
-        
+
         dbms_output.put_line('Celular agregado para cliente ' || cli.id);
-        
+
         v_cli_encontrado := true;
       end if;
-        
+
     end if;
   end loop;
 END;
 
 -- E53
+DECLARE
+  CURSOR c_cli is
+    SELECT *
+    FROM CLIENTES_AA
+    WHERE SUELDO_NETO > 80000;
+BEGIN
+  for cli in c_cli loop
+    UPDATE CLIENTES_AA
+    SET SUELDO_NETO = SUELDO_NETO - 100
+    WHERE CURRENT OF c_cli;
 
+    dbms_output.put_line('Cliente ' || cli.id || ' actualizado');
+  end loop;
+END;
+
+-- E54
+DECLARE
+  cursor c_cli is
+    SELECT *
+    FROM CLIENTES_AA;
+
+  cursor c_cel(cli_id) is
+    SELECT *
+    FROM CELULARES_AA
+    WHERE ID_CLIENTE = cli_id;
+
+  v_cant_cel number;
+BEGIN
+  for cli in c_cli loop
+    SELECT COUNT(*)
+    INTO v_cant_cel
+    FROM CELULARES_AA
+    WHERE ID_CLIENTE = cli.id;
+
+    if v_cant_cel > 0 then
+      dbms_output.put_line('');
+      dbms_output.put_line('');
+      dbms_output.put_line('Nombre: ' || cli.nombre);
+      dbms_output.put_line('Apellido: ' || cli.apellido);
+      dbms_output.put_line('Tiene ' || v_cant_cel || ' celulares:');
+
+      for cel in c_cel(cli.id) loop
+        dbms_output.put_line('  Cod. area: ' || cel.cod_area);
+        dbms_output.put_line('  Numero: ' || cel.numero);
+        dbms_output.put_line('  Marca: ' || cel.marca);
+        dbms_output.put_line('  Fecha compra: ' || cel.fecha_compra);
+      end loop;
+    end if;
+  end loop;
+END;
+
+-- E55
+DECLARE
+  cursor c_cli is
+    SELECT *
+    FROM CLIENTES_AA;
+
+BEGIN
+  for cli in c_cli loop
+    if
 
 
 -- E56
@@ -634,12 +693,12 @@ DECLARE
    v_cli CLIENTES_AA%ROWTYPE;
 BEGIN
   SELECT *
-  INTO v_cli 
+  INTO v_cli
   FROM CLIENTES_AA
   WHERE UPPER(PROVINCIA) = 'FORMOSA';
-  
+
   dbms_output.put_line(v_cli.nombre || v_cli.apellido);
-  
+
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
     dbms_output.put_line('No se encontraron datos');
@@ -653,7 +712,7 @@ BEGIN
   INTO v_cel
   FROM CELULARES_AA
   WHERE COD_AREA = 351;
-  
+
   dbms_output.put_line(v_cel.numero);
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
@@ -697,7 +756,7 @@ END;
 DECLARE
    CURSOR c_cli IS
      SELECT cli.id, cli.nombre, cli.apellido, count(cel.id) AS cantidad_cel
-     FROM CLIENTES_AA cli 
+     FROM CLIENTES_AA cli
        JOIN CELULARES_AA cel ON cli.id = cel.id_cliente
      GROUP BY cli.id, cli.nombre, cli.apellido;
    VARIOS_CELULARES EXCEPTION;
@@ -717,7 +776,7 @@ END;
 DECLARE
    CURSOR c_cli is
      SELECT * FROM CLIENTES_AA;
-   
+
    OFRECER_CEL EXCEPTION;
    DEJAR_DE_OFRECER_CEL EXCEPTION;
    CANDIDATO_ENCONTRADO EXCEPTION;
@@ -728,20 +787,20 @@ BEGIN
       WHEN cli.sueldo_neto > 25000 then RAISE CANDIDATO_ENCONTRADO;
       ELSE RAISE DEJAR_DE_OFRECER_CEL;
     END CASE;
-  end loop;    
+  end loop;
 EXCEPTION
   WHEN OFRECER_CEL THEN
     dbms_output.put_line('Ofrecer celular a cliente');
   WHEN DEJAR_DE_OFRECER_CEL THEN
     dbms_output.put_line('No ofrecer mas celulares a cliente');
   WHEN CANDIDATO_ENCONTRADO THEN
-    dbms_output.put_line('Posible candidato');  
+    dbms_output.put_line('Posible candidato');
 END;
 
 -- E62
-CREATE OR REPLACE FUNCTION valor_max_aa(v_num1 number, v_num2 number) 
+CREATE OR REPLACE FUNCTION valor_max_aa(v_num1 number, v_num2 number)
        return number IS
-BEGIN 
+BEGIN
   if v_num1 > v_num2 then
     return v_num1;
   else
@@ -780,10 +839,10 @@ BEGIN
   SELECT COUNT(*) INTO v_res
   FROM CELULARES_AA
   WHERE cod_area = v_cod;
-  
+
   return v_res;
 END;
-  
+
 DECLARE
   v_cod number := &cod;
 BEGIN
@@ -791,14 +850,14 @@ BEGIN
 END;
 
 -- E65
-CREATE OR REPLACE 
+CREATE OR REPLACE
   FUNCTION obtener_estado_alumno(v_nota number) return varchar2 IS
 BEGIN
-  if v_nota < 4 then 
+  if v_nota < 4 then
     return 'El alumno desprobo';
-  elsif v_nota < 8 then 
+  elsif v_nota < 8 then
     return 'El alumno regularizo';
-  else 
+  else
     return 'El alumno promociono';
   end if;
 END;
@@ -812,14 +871,14 @@ BEGIN
 END;
 
 -- E66
-CREATE OR REPLACE 
+CREATE OR REPLACE
   FUNCTION sum_sueldo_prov_aa(v_prov varchar2) return number IS
     v_res number;
 BEGIN
   SELECT SUM(sueldo_neto) INTO v_res
   FROM CLIENTES_AA
   WHERE UPPER(PROVINCIA) = UPPER(v_prov);
-  
+
   if v_res:
     return v_res;
   else
@@ -878,7 +937,7 @@ BEGIN
     v_sueldo,
     v_direccion,
     v_fecha_nac,
-    v_provincia   
+    v_provincia
   );
 END;
 
