@@ -908,7 +908,7 @@ END;
 
 -- E67
 CREATE OR REPLACE
-  function cant_cel(cli_id number) return number is;
+  function cant_cel(cli_id number) return number is
   v_cant_cel number;
 BEGIN
   SELECT COUNT(*)
@@ -920,6 +920,7 @@ BEGIN
     return v_cant_cel;
   else
     return -1;
+  end if;
 END;
 
 DECLARE
@@ -928,7 +929,14 @@ BEGIN
   dbms_output.put_line('La cantidad de celulares del cliente ' || v_cli_id || ' es ' || cant_cel(v_cli_id));
 END;
     
+-- E68
+CREATE OR REPLACE
+  function max_cel_cli() return varchar2(40) is
+    apellido varchar2(40);
+    max_cel number;
+BEGIN
   
+    
 
 
 -- E79
