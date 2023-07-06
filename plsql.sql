@@ -1034,10 +1034,7 @@ BEGIN
   mostrar_cliente_aa(2000);  
 END;
   
--- E71
-CREATE OR REPLACE
-  procedure corregir_bs_as is
-    
+-- E71    
 
 -- E79
 CREATE SEQUENCE SEC_CLIENTES_AA
@@ -1085,5 +1082,59 @@ BEGIN
 END;
 
 -- E83
+DECLARE
+  v_id_cel number := &id_cel;
+  v_cod_area number := &cod_area;
+  v_numero number := &numero;
+  v_marca varchar2(30) := &marca;
+  v_fecha_compra varchar2(30) := &fecha_compra;
+  v_id_cliente number := &id_cliente;
+BEGIN
+  INSERT INTO CELULARES_AA(
+    id,
+    cod_area,
+    numero,
+    marca,
+    Fecha_Compra,
+    ID_CLIENTE
+  ) VALUES (v_id_cel,v_cod_area,v_numero,v_marca,v_fecha_compra,v_id_cliente);
+END;
 
+-- E84
+CREATE OR REPLACE PACKAGE c_package_aa AS
+  PROCEDURE dar_alta_cliente(
+    p_id clientes_aa.id&type,
+    p_nombre clientes_aa.nombre&type,
+    p_apellido clientes_aa.apellido&type,
+    p_dni clientes_aa.dni&type,
+    p_sueldo_neto clientes_aa.sueldo_neto&type,
+    p_direccion clientes_aa.direccion&type,
+    p_fecha_nac clientes_aa.fecha_nac&type,
+    p_provincia clientes_aa.provincia&type
+  );
+END;
 
+CREATE OR REPLACE PACKAGE BODY c_package_aa AS
+  PROCEDURE dar_alta_cliente(
+    p_id clientes_aa.id&type,
+    p_nombre clientes_aa.nombre&type,
+    p_apellido clientes_aa.apellido&type,
+    p_dni clientes_aa.dni&type,
+    p_sueldo_neto clientes_aa.sueldo_neto&type,
+    p_direccion clientes_aa.direccion&type,
+    p_fecha_nac clientes_aa.fecha_nac&type,
+    p_provincia clientes_aa.provincia&type
+  ) is
+  BEGIN
+    INSERT INTO CLIENTES_AA(
+      id,
+      nombre,
+      apellido,
+      dni,
+      sueldo_neto,
+      direccion,
+      fecha_nac,
+      provincia
+    ) VALUES (p_id,p_nombre,p_apellido,p_dni,p_sueldo_neto,p_direccion,p_fecha_nac,p_provincia);
+  END dar_alta_cliente;
+END c_package_aa;
