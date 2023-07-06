@@ -83,21 +83,21 @@ CREATE OR REPLACE
         JOIN NOTEBOOK_AA NOTE1 ON CLI1.ID = NOTE1.ID_CLIENTE
     );
 BEGIN
-  -- opcion 1 para mostrar clientes que tienen notebooks
+  -- opcion 0 para mostrar clientes que tienen notebooks
   if p_opcion = 0 then
     for cli in c_cli_con_note loop
-      dbms_output.put_line('Id:       ', cli.id);
-      dbms_output.put_line('Nombre:   ', cli.nombre);
-      dbms_output.put_line('Apellido: ', cli.apellido);
+      dbms_output.put_line('Id:       ' || cli.id);
+      dbms_output.put_line('Nombre:   ' || cli.nombre);
+      dbms_output.put_line('Apellido: ' || cli.apellido);
       dbms_output.put_line('');
     end loop;
     
-  -- opcion 2 para mostrar clientes que no tienen notebooks
+  -- opcion 1 para mostrar clientes que no tienen notebooks
   elsif p_opcion = 1 then
     for cli in c_cli_sin_note loop
-      dbms_output.put_line('Id:       ', cli.id);
-      dbms_output.put_line('Nombre:   ', cli.nombre);
-      dbms_output.put_line('Apellido: ', cli.apellido);
+      dbms_output.put_line('Id:       ' || cli.id);
+      dbms_output.put_line('Nombre:   ' || cli.nombre);
+      dbms_output.put_line('Apellido: ' || cli.apellido);
       dbms_output.put_line('');
     end loop;
    
@@ -134,16 +134,23 @@ END cli_note_package_aa;
 DECLARE
   v_cli_id number := &cli_id;
   v_cli CLIENTES_AA%ROWTYPE;
+  v_cant_notebooks number;
 BEGIN
   SELECT *
   INTO v_cli
   FROM CLIENTES_AA
   WHERE ID = v_cli_id;
   
+  v_cant_notebooks := cli_note_package_aa.cant_notebookxcli(v_cli_id);
+  
   dbms_output.put_line('Id       : ' || v_cli.id);
   dbms_output.put_line('Nombre   : ' || v_cli.nombre);
-  dbms_output.put_line('Apellido : ' || v_cli.apellido);  
-  dbms_output.put_line('Tiene ' || cli_note_package_aa.cant_notebookxcli(v_cli_id) || ' notebooks');
+  dbms_output.put_line('Apellido : ' || v_cli.apellido);
+  if v_cant_notebooks > 0 then
+    dbms_output.put_line('Tiene ' || v_cant_notebooks || ' notebook');
+  else 
+    dbms_output.put_line('No tiene notebook');
+  end if;
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
     dbms_output.put_line('No existe el cliente con el id ingresado');
