@@ -1035,6 +1035,9 @@ BEGIN
 END;
   
 -- E71
+CREATE OR REPLACE
+  procedure corregir_bs_as is
+    
 
 -- E79
 CREATE SEQUENCE SEC_CLIENTES_AA
