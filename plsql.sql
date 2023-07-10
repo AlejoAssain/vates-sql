@@ -1023,7 +1023,7 @@ BEGIN
   INTO v_cli
   FROM CLIENTES_AA
   WHERE ID = cli_id;
-  
+
   dbms_output.put_line('Nombre: ' || v_cli.nombre);
   dbms_output.put_line('Apellido: ' || v_cli.apellido);
 EXCEPTION
@@ -1031,10 +1031,214 @@ EXCEPTION
 END;
 
 BEGIN
-  mostrar_cliente_aa(2000);  
+  mostrar_cliente_aa(2000);
 END;
-  
--- E71    
+
+-- E71
+CREATE OR REPLACE PROCEDURE provincia_aa IS
+BEGIN
+  UPDATE clientes_aa
+  set provincia = 'Buenos Aires'
+  WHERE provincia = 'Bs. As.';
+END;
+
+BEGIN
+  provincia_aa();
+  select provincia from clientes_aa;
+END;
+
+-- E72
+CREATE OR REPLACE PROCEDURE alta_cliente
+(id clientes_aa.id%TYPE,
+ nombre clientes_aa.nombre%TYPE,
+ apellido clientes_aa.apellido%TYPE,
+ dni clientes_aa.dni%TYPE,
+ sueldo_neto clientes_aa.sueldo_neto%TYPE,
+ direccion clientes_aa.direccion%TYPE,
+ fecha_nac clientes_aa.fecha_nac%TYPE,
+ provincia clientes_aa.provincia%TYPE)
+IS BEGIN
+  INSERT INTO clientes_aa VALUES
+  (id,nombre,apellido,dni,sueldo_neto,direccion,fecha_nac,provincia);
+END;
+
+BEGIN
+  alta_cliente(30,'Juan','Perez',12345678,70000,'San Martin 845','17/7/1980','Chaco');
+END;
+select * From cli`entes_aa;
+
+-- E73
+CREATE OR REPLACE PROCEDURE cant_prov_aa(provincia1 clientes_aa.provincia%TYPE,
+                             provincia2 clientes_aa.provincia%TYPE) IS
+conteo1 number;
+conteo2 number;
+
+BEGIN
+select count(*) INTO conteo1 from clientes_aa cl JOIN celulares_aa ce ON ce.id_cliente = cl.id WHERE provincia = provincia1;
+select count(*) INTO conteo2 from clientes_aa cl JOIN celulares_aa ce ON ce.id_cliente = cl.id WHERE provincia = provincia2;
+dbms_output.put_line(provincia1 || ' tiene ' || conteo1 ||' celulares');
+dbms_output.put_line(provincia2 || ' tiene ' || conteo2 ||' celulares');
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    dbms_output.put_line('Ingreso provincias incorrectas');
+END;
+
+BEGIN
+cant_prov_aa('C�rdoba','Buenos Aires');
+END;
+
+-- E74
+CREATE OR REPLACE FUNCTION cantidad_cel_provincias_aa(v_provincia clientes_fg.provincia%TYPE) RETURN NUMBER
+   IS v_cantidad_celulares NUMBER;
+
+BEGIN
+  SELECT COUNT(ce.id) INTO v_cantidad_celulares FROM clientes_aa cl JOIN celulares_aa ce ON cl.id=ce.id_cliente
+         WHERE cl.provincia=v_provincia;
+RETURN v_cantidad_celulares;
+END;
+
+DECLARE
+CURSOR provincias IS SELECT DISTINCT(provincia) FROM clientes_aa;
+BEGIN
+  FOR provincias_rec in provincias LOOP
+    dbms_output.put_line('Provincia: '||provincias_rec.provincia||'- Cantidad de Celulares registrados: '||cantidad_cel_provincias_fg(provincias_rec.provincia));
+  END LOOP;
+END;
+
+-- E75
+CREATE OR REPLACE FUNCTION fecha_compra(fecha celulares_aa.fecha_compra%TYPE) RETURN number IS
+conteo1 number;
+BEGIN
+  SELECT count(*) into conteo1 FROM celulares_aa WHERE fecha_compra = fecha;
+  return conteo1;
+END;
+
+DECLARE
+cant_cel number;
+BEGIN
+  cant_cel := fecha_compra('04/04/2016');
+  dbms_output.put_line(cant_cel);
+END;
+
+-- E76
+CREATE OR REPLACE PACKAGE ABM_aa AS
+  PROCEDURE alta(id clientes_aa.id%TYPE,
+                 nombre clientes_aa.nombre%TYPE,
+                 apellido clientes_aa.apellido%TYPE,
+                 dni clientes_aa.dni%TYPE,
+                 sueldo_neto clientes_aa.sueldo_neto%TYPE,
+                 direccion clientes_aa.direccion%TYPE,
+                 fecha_nac clientes_aa.fecha_nac%TYPE,
+                 provincia clientes_aa.provincia%TYPE);
+  PROCEDURE baja(id1 clientes_aa.id%TYPE);
+  PROCEDURE mod_dir(id1 clientes_aa.id%TYPE,direccion1 clientes_aa.direccion%TYPE);
+END ABM_aa;
+
+CREATE OR REPLACE PACKAGE BODY ABM_aa AS
+
+PROCEDURE alta
+(id clientes_aa.id%TYPE,
+ nombre clientes_aa.nombre%TYPE,
+ apellido clientes_aa.apellido%TYPE,
+ dni clientes_aa.dni%TYPE,
+ sueldo_neto clientes_aa.sueldo_neto%TYPE,
+ direccion clientes_aa.direccion%TYPE,
+ fecha_nac clientes_aa.fecha_nac%TYPE,
+ provincia clientes_aa.provincia%TYPE)
+IS BEGIN
+  INSERT INTO clientes_aa VALUES
+  (id,nombre,apellido,dni,sueldo_neto,direccion,fecha_nac,provincia);
+END alta;
+
+PROCEDURE baja(id1 clientes_aa.id%TYPE)
+IS BEGIN
+   DELETE FROM clientes_aa
+   WHERE id = id1;
+END baja;
+
+PROCEDURE mod_dir(id1 clientes_aa.id%TYPE,direccion1 clientes_aa.direccion%TYPE)
+IS BEGIN
+   UPDATE Clientes_aa
+   SET direccion = direccion1
+   WHERE id = id1;
+END mod_dir;
+END ABM_aa;
+
+BEGIN
+  ABM_aa.alta(30,'Diergo','Armando',17256895,45000,'Colon 567','13/11/1985','Jujuy');
+END;
+select * from clientes_aa
+BEGIN
+  ABM_aa.baja(30);
+END;
+BEGIN
+  ABM_aa.mod_dir(30,'San Luis 821');
+END;
+
+-- E77
+CREATE OR REPLACE PACKAGE ej77 AS
+  FUNCTION comparar_clientes(id1 clientes_aa.id%TYPE,id2 clientes_aa.id%TYPE) RETURN clientes_aa%ROWTYPE;
+  FUNCTION cant_cel(id1 clientes_aa.id%TYPE) RETURN number;
+END ej77;
+
+CREATE OR REPLACE PACKAGE BODY ej77 AS
+  FUNCTION comparar_clientes(id1 clientes_aa.id%TYPE,id2 clientes_aa.id%TYPE) RETURN clientes_aa%ROWTYPE
+    IS
+      cliente1 clientes_aa%ROWTYPE;
+      cliente2 clientes_aa%ROWTYPE;
+    BEGIN
+      SELECT * INTO cliente1 FROM clientes_aa WHERE id  = id1;
+      SELECT * INTO cliente2 FROM clientes_aa WHERE id  = id2;
+      IF cliente1.sueldo_neto > cliente2.sueldo_neto THEN
+        RETURN cliente1;
+      ELSE
+        RETURN cliente2;
+      END IF;
+  END comparar_clientes;
+
+  FUNCTION cant_cel(id1 clientes_aa.id%TYPE) RETURN number
+  IS
+    contador number;
+  BEGIN
+    SELECT count(*) INTO contador FROM celulares_aa WHERE id_cliente = id1;
+    RETURN contador;
+  END cant_cel;
+END ej77;
+
+DECLARE
+  cliente_id clientes_aa%ROWTYPE;
+BEGIN
+  cliente_id := ej77.comparar_clientes(3,8);
+  dbms_output.put_line('Cliente con mayor sueldo: ID: ' || cliente_id.id || ', Nombre y apellido: ' || cliente_id.nombre || ' ' || cliente_id.apellido);
+  dbms_output.put_line('Cantidad de celulares que tiene el cliente con mayor sueldo: ' || ej77.cant_cel(cliente_id.id));
+END;
+
+-- E78
+CREATE OR REPLACE PACKAGE alta_provincia_aa AS
+  PROCEDURE cant_clientes_prov(prov clientes_aa.provincia%TYPE);
+END alta_provincia_aa;
+
+CREATE OR REPLACE PACKAGE BODY alta_provincia_aa AS
+  PROCEDURE cant_clientes_prov(prov clientes_aa.provincia%TYPE)
+  IS
+    prov_not_found Exception;
+    contador number;
+  BEGIN
+    select count(*) into contador FROM clientes_aa where provincia = prov;
+    IF contador = 0 THEN
+      RAISE prov_not_found;
+    ELSE
+      dbms_output.put_line('La provincia '||prov||' tiene '||contador||' clientes');
+    END IF;
+  EXCEPTION
+    WHEN prov_not_found THEN
+      dbms_output.put_line('La provincia ingresada no se encuentra en la tabla Clientes');
+  END cant_clientes_prov;
+END alta_provincia_aa;
+
+BEGIN
+  alta_provincia_aa.cant_clientes_prov('Jujuy');
+END;
 
 -- E79
 CREATE SEQUENCE SEC_CLIENTES_AA
